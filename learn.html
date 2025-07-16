@@ -2,16 +2,18 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Учить меню</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
     <h1>Учебник меню</h1>
-    <p>Смотри, повторяй, не ошибайся.</p>
+    <p>Смотри, запоминай — семья не прощает ошибок.</p>
   </header>
-  <main class="container" id="menuTable"></main>
+  <main class="container" id="menuTable">
+    Загрузка меню...
+  </main>
   <script>
     fetch('legacy_menu.json')
       .then(res => res.json())
@@ -23,16 +25,23 @@
         });
 
         const main = document.getElementById('menuTable');
+        main.innerHTML = "";
         for (const category in grouped) {
           const block = document.createElement('div');
-          block.innerHTML = `<h2>${category}</h2><table><tbody>$
-            {grouped[category].map(i => `<tr><td>${i.name}</td><td>${i.price} ₸</td></tr>`).join("")}
-          </tbody></table>`;
+          block.innerHTML = `
+            <h2>${category}</h2>
+            <table>
+              <tbody>
+                ${grouped[category]
+                  .map(i => `<tr><td>${i.name}</td><td>${i.price} ₸</td></tr>`)
+                  .join("")}
+              </tbody>
+            </table>`;
           main.appendChild(block);
         }
       })
-      .catch(error => {
-        document.getElementById('menuTable').innerHTML = 'Ошибка загрузки меню';
+      .catch(err => {
+        document.getElementById('menuTable').innerHTML = "Ошибка загрузки меню.";
       });
   </script>
 </body>

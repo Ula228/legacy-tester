@@ -12,13 +12,15 @@ async function loadMenu() {
 
 function nextQuestion() {
   if (questionCount >= totalQuestions) {
-    const result = document.getElementById("question");
+    const questionEl = document.getElementById("question");
     const optionsEl = document.getElementById("options");
-    result.textContent = `Тест завершён. ${score}/${totalQuestions} правильных.`;
+    const nextBtn = document.getElementById("nextBtn");
+
+    questionEl.textContent = `Тест завершён. ${score}/${totalQuestions} правильных.`;
     optionsEl.innerHTML = score >= 7
       ? "🎩 Уважение. Ты знаешь меню, как Дон знает семью."
       : "❌ Ты подвёл семью. Повтори ещё раз.";
-    document.querySelector("button").disabled = true;
+    nextBtn.disabled = true;
     return;
   }
 
@@ -63,4 +65,5 @@ function checkAnswer(price) {
   if (price === current.price) score++;
   questionCount++;
 }
+
 window.onload = loadMenu;
