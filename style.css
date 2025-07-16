@@ -5,22 +5,26 @@ body {
   margin: 0;
   padding: 0;
 }
+
 header {
   background-color: #000;
   padding: 2rem;
   text-align: center;
   border-bottom: 2px solid #d4af37;
 }
+
 header h1 {
   color: #d4af37;
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
 }
+
 .container {
   padding: 2rem;
   max-width: 900px;
   margin: auto;
 }
+
 .quiz-card {
   background-color: #1e1e1e;
   border: 1px solid #444;
@@ -28,9 +32,11 @@ header h1 {
   padding: 1.5rem;
   margin-bottom: 1rem;
 }
+
 .quiz-card h2 {
   color: #d4af37;
 }
+
 .btn {
   background-color: #d4af37;
   color: #111;
@@ -42,9 +48,16 @@ header h1 {
   display: inline-block;
   margin: 0.5rem 0;
 }
-.btn:hover {
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.btn:hover:enabled {
   background-color: #c19e34;
 }
+
 .option {
   margin-top: 0.5rem;
   padding: 0.6rem;
@@ -53,23 +66,28 @@ header h1 {
   cursor: pointer;
   border: 1px solid #333;
 }
+
 .option:hover {
   background: #3c3c3c;
 }
+
 table {
   width: 100%;
   border-collapse: collapse;
 }
+
 td {
   padding: 0.5rem;
   border-bottom: 1px solid #555;
 }
+
 h2 {
   margin-top: 2rem;
   color: #d4af37;
 }
 
-// script.js
+
+/* ================= script.js ================= */
 let menu = [];
 let current = {};
 let score = 0;
@@ -77,33 +95,33 @@ let questionCount = 0;
 const totalQuestions = 10;
 
 async function loadMenu() {
-  const res = await fetch('legacy_menu.json');
-  menu = await res.json();
-  nextQuestion();
+  try {
+    const res = await fetch('legacy_menu.json');
+    menu = await res.json();
+    nextQuestion();
+  } catch (e) {
+    document.getElementById("question").textContent = "Ошибка загрузки меню";
+  }
 }
 
 function nextQuestion() {
   if (questionCount >= totalQuestions) {
-    const result = document.getElementById("question");
-    const optionsEl = document.getElementById("options");
-    result.textContent = `Тест завершён. ${score}/${totalQuestions} правильных.`;
-    optionsEl.innerHTML = score >= 7
+    document.getElementById("question").textContent = `Тест завершён. ${score}/${totalQuestions} правильных.`;
+    document.getElementById("options").innerHTML = score >= 7
       ? "🎩 Уважение. Ты знаешь меню, как Дон знает семью."
       : "❌ Ты подвёл семью. Повтори ещё раз.";
-    document.querySelector("button").disabled = true;
+    document.getElementById("nextBtn").disabled = true;
     return;
   }
 
-  const questionEl = document.getElementById('question');
-  const optionsEl = document.getElementById('options');
-  const scoreEl = document.getElementById('score');
-  optionsEl.innerHTML = '';
-  scoreEl.textContent = `Вопрос ${questionCount + 1} из ${totalQuestions}`;
+  document.getElementById("nextBtn").disabled = true;
+  const questionEl = document.getElementById("question");
+  const optionsEl = document.getElementById("options");
+  const scoreEl = document.getElementById("score");
 
   current = menu[Math.floor(Math.random() * menu.length)];
-  questionEl.textContent = `Сколько стоит блюдо: \"${current.name}\"?`;
-
   let prices = [current.price];
+
   while (prices.length < 4) {
     let fake = menu[Math.floor(Math.random() * menu.length)].price;
     if (!prices.includes(fake)) prices.push(fake);
@@ -111,29 +129,32 @@ function nextQuestion() {
 
   prices = prices.sort(() => Math.random() - 0.5);
 
+  questionEl.textContent = `Сколько стоит блюдо: \"${current.name}\"?`;
+  scoreEl.textContent = `Вопрос ${questionCount + 1} из ${totalQuestions}`;
+
+  optionsEl.innerHTML = '';
   prices.forEach(price => {
-    const btn = document.createElement('div');
-    btn.className = 'option';
-    btn.textContent = `${price} ₸`;
-    btn.onclick = () => checkAnswer(price);
-    optionsEl.appendChild(btn);
+    const div = document.createElement('div');
+    div.className = 'option';
+    div.textContent = `${price} ₸`;
+    div.onclick = () => selectAnswer(price, div);
+    optionsEl.appendChild(div);
   });
 }
 
-function checkAnswer(price) {
-  const options = document.querySelectorAll('.option');
+function selectAnswer(selectedPrice, el) {
+  const options = document.querySelectorAll(".option");
+  options.forEach(option => option.onclick = null);
+
   options.forEach(option => {
     const val = parseInt(option.textContent);
-    if (val === current.price) {
-      option.style.background = '#1d6b1d';
-    } else if (val === price) {
-      option.style.background = '#6b1d1d';
-    }
-    option.onclick = null;
+    if (val === current.price) option.style.background = '#1d6b1d';
+    else if (val === selectedPrice) option.style.background = '#6b1d1d';
   });
 
-  if (price === current.price) score++;
+  if (selectedPrice === current.price) score++;
   questionCount++;
+  document.getElementById("nextBtn").disabled = false;
 }
 
 window.onload = loadMenu;
