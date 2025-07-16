@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Викторина</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -13,11 +13,11 @@
   </header>
   <main class="container">
     <div class="quiz-card">
-      <h2 id="question">Загрузка вопроса...</h2>
+      <h2 id="question">Загрузка...</h2>
       <div id="options"></div>
     </div>
     <p id="score"></p>
-    <button class="btn" onclick="nextQuestion()">Следующий</button>
+    <button class="btn" onclick="nextQuestion()" id="nextBtn" disabled>Следующий</button>
   </main>
   <script src="script.js"></script>
 </body>
