@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Учить меню</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Учебник меню</h1>
+    <p>Смотри, повторяй, не ошибайся.</p>
+  </header>
+  <main class="container" id="menuTable"></main>
+  <script>
+    fetch('legacy_menu.json')
+      .then(res => res.json())
+      .then(data => {
+        const grouped = {};
+        data.forEach(item => {
+          if (!grouped[item.category]) grouped[item.category] = [];
+          grouped[item.category].push(item);
+        });
+
+        const main = document.getElementById('menuTable');
+        for (const category in grouped) {
+          const block = document.createElement('div');
+          block.innerHTML = `<h2>${category}</h2><table><tbody>$
+            {grouped[category].map(i => `<tr><td>${i.name}</td><td>${i.price} ₸</td></tr>`).join("")}
+          </tbody></table>`;
+          main.appendChild(block);
+        }
+      });
+  </script>
+</body>
+</html>
